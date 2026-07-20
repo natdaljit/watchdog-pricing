@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Watchdog Sizing & Pricing Calculator | JIT Industries</title>
+  <style>
+    :root {
+      --bg: #0d0f14;
+      --panel: #161a22;
+      --panel-2: #1c212b;
+      --border: #2a3140;
+      --text: #d1d5db;
+      --text-dim: #8b93a7;
+      --accent: #f59e0b;
+      --accent-dim: #b45309;
+      --good: #10b981;
+      --good-bg: rgba(16, 185, 129, 0.12);
+      --steel: #3b82f6;
+      --danger: #ef4444;
+      --radius: 10px;
+      --shadow: 0 8px 32px rgba(0,0,0,0.45);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.45;
+      background-image:
+        radial-gradient(ellipse 120% 80% at 50% -30%, rgba(245, 158, 11, 0.07), transparent),
+        linear-gradient(180deg, #0d0f14 0%, #0a0c10 100%);
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(180deg, #141820 0%, #0f1218 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 1.1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+    }
+
+    .logo-mark {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      border: 2px solid var(--accent);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: var(--accent);
+      letter-spacing: -0.5px;
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.25);
+    }
+
+    .brand-text h1 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: #f3f4f6;
+    }
+
+    .brand-text h1 span {
+      color: var(--accent);
+    }
+
+    .brand-text p {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-top: 1px;
+    }
+
+    .header-badge {
+      font-size: 0.72rem;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+    }
+
+    /* Layout */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+
+    /* Inputs */
+    .inputs-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.4rem 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+
+    .inputs-card h2 {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .inputs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+      align-items: end;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin-bottom: 0.35rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .field input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.6rem 0.75rem;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-variant-numeric: tabular-nums;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .field input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+    }
+
+    .field .unit {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      margin-top: 0.2rem;
+    }
+
+    .btn-calc {
+      background: linear-gradient(180deg, #f59e0b, #d97706);
+      color: #111;
+      border: none;
+      font-weight: 700;
+      padding: 0.7rem 1.4rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      letter-spacing: 0.03em;
+      transition: transform 0.12s, box-shadow 0.12s;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+    }
+
+    .btn-calc:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.45);
+    }
+
+    .btn-calc:active { transform: translateY(0); }
+
+    /* Recommendation bar */
+    .rec-bar {
+      margin-top: 1.1rem;
+      padding: 0.75rem 1rem;
+      background: var(--panel-2);
+      border-radius: 6px;
+      border-left: 3px solid var(--accent);
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    .rec-bar.visible { display: block; }
+
+    .rec-bar strong { color: var(--accent); }
+
+    /* Results */
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 0.9rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .results-header h2 {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+    }
+
+    .legend {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    .legend .best-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      background: var(--good);
+      border-radius: 50%;
+      margin-right: 4px;
+      vertical-align: middle;
+      box-shadow: 0 0 8px var(--good);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: border-color 0.2s, transform 0.15s;
+      position: relative;
+    }
+
+    .card.best {
+      border-color: var(--good);
+      box-shadow: 0 0 0 1px var(--good), 0 8px 32px rgba(16, 185, 129, 0.18);
+    }
+
+    .card.best::before {
+      content: "BEST VALUE";
+      position: absolute;
+      top: 12px;
+      right: -28px;
+      background: var(--good);
+      color: #042f2e;
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      padding: 0.25rem 2.2rem;
+      transform: rotate(45deg);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .card-head {
+      padding: 0.9rem 1.1rem;
+      background: var(--panel-2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-head .title {
+      font-size: 0.95rem;
+      font-weight: 650;
+      color: #f3f4f6;
+    }
+
+    .card-head .sub {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    .card-body {
+      padding: 1rem 1.1rem 1.15rem;
+    }
+
+    .metric {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.32rem 0;
+      border-bottom: 1px solid rgba(42, 49, 64, 0.6);
+      font-size: 0.88rem;
+    }
+
+    .metric:last-child { border-bottom: none; }
+
+    .metric .label { color: var(--text-dim); }
+
+    .metric .value {
+      font-variant-numeric: tabular-nums;
+      font-weight: 550;
+      color: #e5e7eb;
+    }
+
+    .metric.highlight .value {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .metric.cost .value {
+      font-size: 1.15rem;
+      color: #fbbf24;
+      font-weight: 700;
+    }
+
+    .card.best .metric.cost .value {
+      color: var(--good);
+    }
+
+    .booster-tag {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .booster-tag.yes {
+      background: rgba(59, 130, 246, 0.2);
+      color: #93c5fd;
+      border: 1px solid rgba(59, 130, 246, 0.35);
+    }
+
+    .booster-tag.no {
+      background: rgba(139, 147, 167, 0.15);
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+    }
+
+    .empty-msg {
+      text-align: center;
+      padding: 2.5rem 1rem;
+      color: var(--text-dim);
+      font-size: 0.95rem;
+    }
+
+    /* Footer notes */
+    .notes {
+      margin-top: 1.75rem;
+      padding: 1rem 1.2rem;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      line-height: 1.55;
+    }
+
+    .notes strong { color: var(--text); }
+
+    .notes ul {
+      margin: 0.4rem 0 0 1.1rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.72rem;
+      color: #4b5563;
+      border-top: 1px solid var(--border);
+      margin-top: 2rem;
+    }
+
+    @media (max-width: 600px) {
+      .card.best::before {
+        font-size: 0.58rem;
+        right: -32px;
+        top: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      
+      <div class="brand-text">
+        <h1>JIT <span>INDUSTRIES</span></h1>
+        <p>Watchdog Fail-Safe Actuator Calculator</p>
+      </div>
+    </div>
+    
+  </header>
+
+  <div class="container">
+    <div class="inputs-card">
+      <h2>▸ Design Inputs</h2>
+      <div class="inputs-grid">
+        <div class="field">
+          <label for="pressure">Input Pressure</label>
+          <input type="number" id="pressure" value="80" min="1" step="1" />
+          <div class="unit">psi (line / supply)</div>
+        </div>
+        <div class="field">
+          <label for="force">Required Seating Force</label>
+          <input type="number" id="force" value="5000" min="1" step="1" />
+          <div class="unit">lbf</div>
+        </div>
+        <div class="field">
+          <label for="stroke">Stroke Length</label>
+          <input type="number" id="stroke" value="12.25" min="0.25" step="0.25" />
+          <div class="unit">inches (used / actuation)</div>
+        </div>
+        <div class="field">
+          <label for="maxExtra">Max Extra Length</label>
+          <input type="number" id="maxExtra" value="100" min="0" max="150" step="1" />
+          <div class="unit">inches (for optimization)</div>
+        </div>
+        <div class="field">
+          <label>&nbsp;</label>
+          <button class="btn-calc" onclick="calculate()">Calculate</button>
+        </div>
+      </div>
+      <div class="rec-bar" id="recBar"></div>
+    </div>
+
+    <div class="results-header">
+      <h2>Results — Four Configurations</h2>
+      <div class="legend"><span class="best-dot"></span> Lowest cost option highlighted</div>
+    </div>
+
+    <div class="cards" id="results">
+      <div class="empty-msg">Enter inputs and click Calculate</div>
+    </div>
+
+    <div class="notes">
+      <strong>Calculation basis (matches Excel Watchdog calc)</strong>
+      <ul>
+        <li>Concentric annular air reservoir (tank tube around cylinder tube). Volume uses tank ID, cylinder OD (= bore + 2×wall), and total length = stroke + extra.</li>
+        <li>Isothermal expansion (Boyle): P<sub>final</sub> = P<sub>init</sub> × V<sub>tank</sub> / (V<sub>tank</sub> + V<sub>cyl</sub>). Fail-close force = P<sub>final</sub> × piston area.</li>
+        <li>P<sub>init</sub> = line pressure (no booster) or 2× line pressure (with 2:1 amplifier).</li>
+        <li>Only standard VA bore/tank sizes. Cylinder must also satisfy Operating Force (area × line pressure) ≥ Required Force.</li>
+        <li>FSF = 1.00. Cost = tank base (0.7 × VA cyl base) + total stroke × tank $/in (0.3 × VA) + $1000 Watchdog (no booster) or + $1500 booster.</li>
+        <li>Rod diameter taken from tank size data; female rod thread from acting cylinder bore data.</li>
+      </ul>
+    </div>
+  </div>
+
+  <footer>
+    JIT Industries — Hydraulic &amp; Pneumatic Cylinder Manufacturing, Repair &amp; Engineering &nbsp;|&nbsp; Watchdog Calculator
+  </footer>
+
+  <script>
+    // Standard sizes & pricing data (from Excel Cost Optimized Calc / VA sheets)
+    const BORES = [2.5, 3.25, 4, 5, 6, 7, 8, 10, 12, 14, 16, 18, 20, 22, 24];
+
+    const DATA = {
+      2.5:  { wall: 0.125, rod: 0.625, thread: "7/16-20",   cylBase: 460,  cylPin: 12  },
+      3.25: { wall: 0.125, rod: 1,     thread: "3/4-16",    cylBase: 520,  cylPin: 13  },
+      4:    { wall: 0.125, rod: 1,     thread: "3/4-16",    cylBase: 610,  cylPin: 15  },
+      5:    { wall: 0.125, rod: 1,     thread: "3/4-16",    cylBase: 700,  cylPin: 18  },
+      6:    { wall: 0.188, rod: 1,     thread: "3/4-16",    cylBase: 790,  cylPin: 21  },
+      7:    { wall: 0.188, rod: 1,     thread: "3/4-16",    cylBase: 1000,  cylPin: 28  },
+      8:    { wall: 0.188, rod: 1,     thread: "3/4-16",    cylBase: 1060,  cylPin: 39  },
+      10:   { wall: 0.225, rod: 1,     thread: "3/4-16",    cylBase: 1200, cylPin: 51  },
+      12:   { wall: 0.225, rod: 1.375, thread: "1-14",      cylBase: 2100, cylPin: 70  },
+      14:   { wall: 0.225, rod: 1.375, thread: "1-14",      cylBase: 2800, cylPin: 85  },
+      16:   { wall: 0.312, rod: 1.75,  thread: "1-1/4-12",  cylBase: 5400, cylPin: 198 },
+      18:   { wall: 0.312, rod: 2,     thread: "1 1/2-12",  cylBase: 7000, cylPin: 250 },
+      20:   { wall: 0.312, rod: 2,     thread: "1 1/2-12",  cylBase: 8500, cylPin: 350 },
+      22:   { wall: 0.312, rod: 2.5,   thread: "1 7/8-12",  cylBase: 9000, cylPin: 450 },
+      24:   { wall: 0.375, rod: 2.5,   thread: "1 7/8-12",  cylBase: 12000, cylPin: 700 }
+    };
+
+    function tankBase(t) { return DATA[t].cylBase * 0.7; }
+    function tankPin(t)  { return DATA[t].cylPin  * 0.3; }
+
+    function calcForce(bore, tank, stroke, extra, pInit) {
+      const wall = DATA[bore].wall;
+      const L = stroke + extra;
+      const rTank = tank / 2;
+      const rOuter = (bore + 2 * wall) / 2;
+      const vTank = Math.PI * (rTank * rTank - rOuter * rOuter) * L;
+      if (vTank <= 1e-9) return { force: 0, pFinal: 0 };
+      const vCyl = Math.PI * (bore / 2) ** 2 * stroke;
+      const pFinal = pInit * vTank / (vTank + vCyl);
+      const ap = Math.PI * (bore / 2) ** 2;
+      return { force: pFinal * ap, pFinal };
+    }
+
+    function findBest(pressure, required, stroke, maxExtra, useBoost, fixedOnly) {
+      const pInit = useBoost ? pressure * 2 : pressure;
+      const baseAdd = useBoost ? 2000 : 1500;
+      let minCost = Infinity;
+      let best = null;
+
+      for (const b of BORES) {
+        const ap = Math.PI * (b / 2) ** 2;
+        const opForce = ap * pressure;               // always at line pressure
+        if (opForce < required) continue;            // key filter matching Excel
+
+        const wall = DATA[b].wall;
+        for (const t of BORES) {
+          if (t <= b + 2 * wall) continue;           // positive annular volume
+          for (let e = 0; e <= maxExtra; e++) {
+            if (fixedOnly && e !== 0) continue;
+            const { force, pFinal } = calcForce(b, t, stroke, e, pInit);
+            if (force >= required) {
+              const totalStroke = stroke + e;
+              const cost = tankBase(t) + totalStroke * tankPin(t) + baseAdd;
+              if (cost < minCost - 1e-6) {
+                minCost = cost;
+                best = {
+                  bore: b,
+                  tank: t,
+                  extra: e,
+                  totalStroke,
+                  usedStroke: stroke,
+                  failClose: force,
+                  opForce,
+                  pFinal,
+                  cost,
+                  rod: DATA[t].rod,                  // rod from tank size
+                  thread: DATA[b].thread,            // thread from acting bore
+                  booster: useBoost
+                };
+              }
+            }
+          }
+        }
+      }
+      return best;
+    }
+
+    function fmt(n, dec = 2) {
+      if (n == null || isNaN(n)) return "—";
+      return Number(n).toLocaleString("en-US", {
+        minimumFractionDigits: dec,
+        maximumFractionDigits: dec
+      });
+    }
+
+    function fmtInt(n) {
+      if (n == null || isNaN(n)) return "—";
+      return Math.round(n).toLocaleString("en-US");
+    }
+
+    function cardHTML(cfg, title, sub, isBest) {
+      if (!cfg) {
+        return `
+          <div class="card">
+            <div class="card-head">
+              <div class="title">${title}</div>
+              <div class="sub">${sub}</div>
+            </div>
+            <div class="card-body">
+              <div class="empty-msg" style="padding:1.5rem 0">No solution found<br>within constraints</div>
+            </div>
+          </div>`;
+      }
+
+      const boosterClass = cfg.booster ? "yes" : "no";
+      const boosterLabel = cfg.booster ? "Yes" : "No";
+
+      return `
+        <div class="card ${isBest ? "best" : ""}">
+          <div class="card-head">
+            <div class="title">${title}</div>
+            <div class="sub">${sub} &nbsp;·&nbsp; <span class="booster-tag ${boosterClass}">Booster ${boosterLabel}</span></div>
+          </div>
+          <div class="card-body">
+            <div class="metric"><span class="label">Cylinder Bore</span><span class="value">${cfg.bore} in</span></div>
+            <div class="metric"><span class="label">Tank Bore</span><span class="value">${cfg.tank} in</span></div>
+            <div class="metric"><span class="label">Used / Total Stroke</span><span class="value">${cfg.usedStroke} / ${cfg.totalStroke} in</span></div>
+            <div class="metric highlight"><span class="label">Fail-Close Force</span><span class="value">${fmt(cfg.failClose, 1)} lbf</span></div>
+            <div class="metric"><span class="label">Operating Force</span><span class="value">${fmt(cfg.opForce, 1)} lbf</span></div>
+            <div class="metric highlight"><span class="label">P<sub>final</sub> @ used stroke</span><span class="value">${fmt(cfg.pFinal, 1)} psi</span></div>
+            <div class="metric"><span class="label">Rod Size</span><span class="value">${cfg.rod} in</span></div>
+            <div class="metric"><span class="label">Female Rod Thread</span><span class="value">${cfg.thread}</span></div>
+            <div class="metric cost"><span class="label">Cost</span><span class="value">$${fmt(cfg.cost, 2)}</span></div>
+          </div>
+        </div>`;
+    }
+
+    function calculate() {
+      const pressure = parseFloat(document.getElementById("pressure").value) || 0;
+      const required = parseFloat(document.getElementById("force").value) || 0;
+      const stroke   = parseFloat(document.getElementById("stroke").value) || 0;
+      const maxExtra = parseInt(document.getElementById("maxExtra").value, 10) || 0;
+
+      if (pressure <= 0 || required <= 0 || stroke <= 0) {
+        document.getElementById("results").innerHTML = `<div class="empty-msg">Please enter valid positive values for pressure, force, and stroke.</div>`;
+        document.getElementById("recBar").classList.remove("visible");
+        return;
+      }
+
+      const specNo  = findBest(pressure, required, stroke, maxExtra, false, true);
+      const optNo   = findBest(pressure, required, stroke, maxExtra, false, false);
+      const optYes  = findBest(pressure, required, stroke, maxExtra, true,  false);
+      const specYes = findBest(pressure, required, stroke, maxExtra, true,  true);
+
+      // Determine cheapest among the four (or among those that exist)
+      const candidates = [specNo, optNo, optYes, specYes].filter(Boolean);
+      let cheapestCost = Infinity;
+      candidates.forEach(c => { if (c.cost < cheapestCost) cheapestCost = c.cost; });
+
+      const isBest = (cfg) => cfg && Math.abs(cfg.cost - cheapestCost) < 0.02;
+
+      document.getElementById("results").innerHTML =
+        cardHTML(specNo,  "Spec Stroke · No Booster",     "Fixed stroke, line pressure only", isBest(specNo)) +
+        cardHTML(optNo,   "Optimized Stroke · No Booster","Extra length allowed, line pressure", isBest(optNo)) +
+        cardHTML(optYes,  "Optimized Stroke · Booster",   "Extra length + 2:1 amplifier", isBest(optYes)) +
+        cardHTML(specYes, "Spec Stroke · Booster",        "Fixed stroke + 2:1 amplifier", isBest(specYes));
+
+      // Recommendation bar
+      const rec = document.getElementById("recBar");
+      if (optYes && optNo) {
+        if (optYes.cost < optNo.cost - 0.5) {
+          rec.innerHTML = `<strong>Amplifier recommended.</strong> Optimized + booster is $${fmt(optNo.cost - optYes.cost, 0)} less expensive than the best no-booster option.`;
+          rec.classList.add("visible");
+        } else {
+          rec.innerHTML = `<strong>Amplifier not required for lowest cost.</strong> The optimized no-booster solution is competitive or cheaper.`;
+          rec.classList.add("visible");
+        }
+      } else if (candidates.length === 0) {
+        rec.innerHTML = `No valid configuration found. Try increasing Max Extra Length or reducing required force / increasing pressure.`;
+        rec.classList.add("visible");
+      } else {
+        rec.classList.remove("visible");
+      }
+    }
+
+    // Auto-run on load with Excel sample values
+    document.addEventListener("DOMContentLoaded", calculate);
+
+    // Optional: recalculate on Enter
+    document.querySelectorAll(".inputs-card input").forEach(el => {
+      el.addEventListener("keydown", (e) => { if (e.key === "Enter") calculate(); });
+    });
+  </script>
+</body>
+</html>
