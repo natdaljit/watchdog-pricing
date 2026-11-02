@@ -449,7 +449,7 @@
         <li>Isothermal expansion (Boyle): P<sub>final</sub> = P<sub>init</sub> × V<sub>tank</sub> / (V<sub>tank</sub> + V<sub>cyl</sub>). Fail-close force = P<sub>final</sub> × piston area.</li>
         <li>P<sub>init</sub> = line pressure (no booster) or 2× line pressure (with 2:1 amplifier).</li>
         <li>Only standard VA bore/tank sizes. Cylinder must also satisfy Operating Force (area × line pressure) ≥ Required Force.</li>
-        <li>FSF = 1.00. Cost = tank base (0.7 × VA cyl base) + total stroke × tank $/in (0.3 × VA) + $1000 Watchdog (no booster) or + $1500 booster.</li>
+        <li>FSF = 1.00. Price = tank cost at total stroke (VA base price + total stroke × VA $/in for the tank size) + 10% of cylinder cost at total stroke (VA cyl base + total stroke × VA $/in) + $1000 Watchdog valve + $1500 if a booster is used.</li>
         <li>Rod diameter taken from tank size data; female rod thread from acting cylinder bore data.</li>
       </ul>
     </div>
@@ -461,32 +461,33 @@
 
   <script>
     // Standard sizes & pricing data (from Excel Cost Optimized Calc / VA sheets)
-    const BORES = [2.5, 3.25, 4, 5, 6, 7, 8, 10, 12, 14, 16, 18, 20, 22, 24, 28, 32, 36, 42];
+    const BORES = [2.5, 3.25, 4, 5, 6, 7, 8, 10, 12, 14, 16, 18, 20, 22, 24, 28, 32, 36, 40];
 
     const DATA = {
-      2.5:  { wall: 0.125, rod: 0.625, thread: "7/16-20",   cylBase: 400,  cylPin: 12  },
-      3.25: { wall: 0.125, rod: 1,     thread: "3/4-16",    cylBase: 450,  cylPin: 14  },
-      4:    { wall: 0.125, rod: 1,     thread: "3/4-16",    cylBase: 550,  cylPin: 16  },
-      5:    { wall: 0.125, rod: 1,     thread: "3/4-16",    cylBase: 625,  cylPin: 20  },
-      6:    { wall: 0.188, rod: 1,     thread: "3/4-16",    cylBase: 700,  cylPin: 25  },
-      7:    { wall: 0.188, rod: 1,     thread: "3/4-16",    cylBase: 950,  cylPin: 30  },
-      8:    { wall: 0.188, rod: 1,     thread: "3/4-16",    cylBase: 1000, cylPin: 40  },
-      10:   { wall: 0.225, rod: 1,     thread: "3/4-16",    cylBase: 1250, cylPin: 55  },
-      12:   { wall: 0.225, rod: 1.375, thread: "1-14",      cylBase: 2000, cylPin: 70  },
-      14:   { wall: 0.225, rod: 1.375, thread: "1-14",      cylBase: 3000, cylPin: 100 },
-      16:   { wall: 0.312, rod: 1.75,  thread: "1-1/4-12",  cylBase: 5000, cylPin: 250 },
-      18:   { wall: 0.312, rod: 2,     thread: "1 1/2-12",  cylBase: 6500, cylPin: 300 },
-      20:   { wall: 0.312, rod: 2,     thread: "1 1/2-12",  cylBase: 7500, cylPin: 350 },
-      22:   { wall: 0.312, rod: 2.5,   thread: "1 7/8-12",  cylBase: 9000, cylPin: 400 },
-      24:   { wall: 0.375, rod: 2.5,   thread: "1 7/8-12",  cylBase: 10500,cylPin: 500 },
-      28:   { wall: 0.375, rod: 3,     thread: "2 1/4-12",  cylBase: 14000,cylPin: 600 },
-      32:   { wall: 0.375, rod: 3,     thread: "2 1/4-12",  cylBase: 16000,cylPin: 700 },
-      36:   { wall: 0.375, rod: 3.5,   thread: "2 1/2-12",  cylBase: 20000,cylPin: 800 },
-      42:   { wall: 0.375, rod: 3.5,   thread: "2 1/2-12",  cylBase: 25000,cylPin: 950 }, 
+      2.5:  { wall: 0.125, rod: 0.625, thread: "7/16-20",   cylBase: 400,  cylPin: 6   },
+      3.25: { wall: 0.125, rod: 1,     thread: "3/4-16",    cylBase: 450,  cylPin: 7   },
+      4:    { wall: 0.125, rod: 1,     thread: "3/4-16",    cylBase: 550,  cylPin: 8   },
+      5:    { wall: 0.125, rod: 1,     thread: "3/4-16",    cylBase: 625,  cylPin: 9   },
+      6:    { wall: 0.188, rod: 1,     thread: "3/4-16",    cylBase: 700,  cylPin: 14  },
+      7:    { wall: 0.188, rod: 1,     thread: "3/4-16",    cylBase: 950,  cylPin: 16  },
+      8:    { wall: 0.188, rod: 1,     thread: "3/4-16",    cylBase: 1000, cylPin: 19  },
+      10:   { wall: 0.225, rod: 1,     thread: "3/4-16",    cylBase: 1250, cylPin: 34  },
+      12:   { wall: 0.225, rod: 1.375, thread: "1-14",      cylBase: 2000, cylPin: 44  },
+      14:   { wall: 0.225, rod: 1.375, thread: "1-14",      cylBase: 3000, cylPin: 58  },
+      16:   { wall: 0.312, rod: 1.75,  thread: "1-1/4-12",  cylBase: 5000, cylPin: 90  },
+      18:   { wall: 0.312, rod: 2,     thread: "1 1/2-12",  cylBase: 6500, cylPin: 100 },
+      20:   { wall: 0.312, rod: 2,     thread: "1 1/2-12",  cylBase: 7500, cylPin: 137 },
+      22:   { wall: 0.312, rod: 2.5,   thread: "1 7/8-12",  cylBase: 9000, cylPin: 202 },
+      24:   { wall: 0.375, rod: 2.5,   thread: "1 7/8-12",  cylBase: 10500,cylPin: 247 },
+      28:   { wall: 0.375, rod: 3,     thread: "2 1/4-12",  cylBase: 14000,cylPin: 298 },
+      32:   { wall: 0.375, rod: 3,     thread: "2 1/4-12",  cylBase: 16000,cylPin: 392 },
+      36:   { wall: 0.375, rod: 3.5,   thread: "2 1/2-12",  cylBase: 20000,cylPin: 442 },
+      40:   { wall: 0.375, rod: 3.5,   thread: "2 1/2-12",  cylBase: 25000,cylPin: 546 }, 
     };
 
-    function tankBase(t) { return DATA[t].cylBase * 0.7; }
-    function tankPin(t)  { return DATA[t].cylPin  * 0.3; }
+    function tankCost(t, L) { return DATA[t].cylBase + L * DATA[t].cylPin; }
+    function cylCost(b, L)  { return DATA[b].cylBase + L * DATA[b].cylPin; }
+    const WATCHDOG_VALVE = 1000, BOOSTER = 1500, CYL_PCT = 0.10;
 
     function calcForce(bore, tank, stroke, extra, pInit) {
       const wall = DATA[bore].wall;
@@ -503,7 +504,7 @@
 
     function findBest(pressure, required, stroke, maxExtra, useBoost, fixedOnly) {
       const pInit = useBoost ? pressure * 2 : pressure;
-      const baseAdd = useBoost ? 1500 : 1000;
+      const baseAdd = WATCHDOG_VALVE + (useBoost ? BOOSTER : 0);
       let minCost = Infinity;
       let best = null;
 
@@ -520,7 +521,7 @@
             const { force, pFinal } = calcForce(b, t, stroke, e, pInit);
             if (force >= required) {
               const totalStroke = stroke + e;
-              const cost = tankBase(t) + totalStroke * tankPin(t) + baseAdd;
+              const cost = tankCost(t, totalStroke) + CYL_PCT * cylCost(b, totalStroke) + baseAdd;
               if (cost < minCost - 1e-6) {
                 minCost = cost;
                 best = {
